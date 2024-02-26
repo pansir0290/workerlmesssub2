@@ -1,6 +1,8 @@
 // 设置优选地址，不带端口号默认8443，不支持非TLS订阅生成
 let addresses = [
-	
+	'cu.34310889.xyz:443#肯定能用1',
+	'ip.34310889.xyz:8443#联通应该能用',
+	'cmcc.34310889.xyz:8443#移动可能能用'
 ];
 
 // 设置优选地址api接口
@@ -245,75 +247,31 @@ ${url.pathname + url.search}</tg-spoiler>`);
 			}
 		}
 
-		if (userAgent.includes('telegram') || userAgent.includes('twitter') || userAgent.includes('miaoko')) {
-			return new Response('Hello World!');
-		} else if (userAgent.includes('clash')) {
-			const subconverterUrl = `https://${subconverter}/sub?target=clash&url=${encodeURIComponent(request.url)}&insert=false&config=${encodeURIComponent
+		else if (userAgent.includes('clash')) {
+    const subconverterUrl = `https://${subconverter}/sub?target=clash&url=${encodeURIComponent(request.url)}&insert=false&config=${encodeURIComponent
+    (subconfig)}&emoji=true&list=false&tfo=false&scv=false&fdn=false&sort=false&new_name=true`;
+  
+    try {
+        const subconverterResponse = await fetch(subconverterUrl);
 
-(subconfig)}&emoji=true&list=false&tfo=false&scv=false&fdn=false&sort=false&new_name=true`;
+        if (!subconverterResponse.ok) {
+            throw new Error(Error fetching subconverterUrl: ${subconverterResponse.status} ${subconverterResponse.statusText});
+        }
 
-			try {
-				const subconverterResponse = await fetch(subconverterUrl);
-				
-				if (!subconverterResponse.ok) {
-					throw new Error(`Error fetching subconverterUrl: ${subconverterResponse.status} ${subconverterResponse.statusText}`);
-				}
-				
-				const subconverterContent = await subconverterResponse.text();
-				
-				return new Response(subconverterContent, {
-					headers: { 'content-type': 'text/plain; charset=utf-8' },
-				});
-			} catch (error) {
-				return new Response(`Error: ${error.message}`, {
-					status: 500,
-					headers: { 'content-type': 'text/plain; charset=utf-8' },
-				});
-			}
-		} else if (userAgent.includes('sing-box') || userAgent.includes('singbox')){
-			const subconverterUrl = `https://${subconverter}/sub?target=singbox&url=${encodeURIComponent(request.url)}&insert=false&config=${encodeURIComponent
+        const subconverterContent = await subconverterResponse.text();
 
-(subconfig)}&emoji=true&list=false&tfo=false&scv=false&fdn=false&sort=false&new_name=true`;
-
-			try {
-			const subconverterResponse = await fetch(subconverterUrl);
-			
-				if (!subconverterResponse.ok) {
-					throw new Error(`Error fetching subconverterUrl: ${subconverterResponse.status} ${subconverterResponse.statusText}`);
-				}
-				
-				const subconverterContent = await subconverterResponse.text();
-				
-				return new Response(subconverterContent, {
-					headers: { 'content-type': 'text/plain; charset=utf-8' },
-				});
-			} catch (error) {
-				return new Response(`Error: ${error.message}`, {
-					status: 500,
-					headers: { 'content-type': 'text/plain; charset=utf-8' },
-				});
-			}
-		} else {
-			if(url.searchParams.get('host') && (url.searchParams.get('host').includes('workers.dev') || url.searchParams.get('host').includes('pages.dev'))) {
-				if (proxyhostsURL) {
-					try {
-						const response = await fetch(proxyhostsURL); 
-					
-						if (!response.ok) {
-							console.error('获取地址时出错:', response.status, response.statusText);
-							return; // 如果有错误，直接返回
-						}
-					
-						const text = await response.text();
-						const lines = text.split('\n');
-						// 过滤掉空行或只包含空白字符的行
-						const nonEmptyLines = lines.filter(line => line.trim() !== '');
-					
-						proxyhosts = proxyhosts.concat(nonEmptyLines);
-					} catch (error) {
-						console.error('获取地址时出错:', error);
-					}
-				}
+        return new Response(subconverterContent, {
+            headers: { 'content-type': 'text/plain; charset=utf-8' },
+        });
+    } catch (error) {
+        return new Response(Error: ${error.message}, {
+            status: 500,
+            headers: { 'content-type': 'text/plain; charset=utf-8' },
+        });
+    }
+} else if (userAgent.includes('sing-box')  userAgent.includes('singbox')){
+    const subconverterUrl = `https://${subconverter}/sub?target=singbox&url=${encodeURIComponent(request.url)}&insert=false&config=${encodeURIComponent
+    (subconfig)}&emoji=true&list=false&tfo=false&scv=false&fdn=false&sort=false&new_name=true`;
 				// 使用Set对象去重
 				proxyhosts = [...new Set(proxyhosts)];
 			}
