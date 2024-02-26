@@ -247,31 +247,75 @@ ${url.pathname + url.search}</tg-spoiler>`);
 			}
 		}
 
-		else if (userAgent.includes('clash')) {
-    const subconverterUrl = `https://${subconverter}/sub?target=clash&url=${encodeURIComponent(request.url)}&insert=false&config=${encodeURIComponent
-    (subconfig)}&emoji=true&list=false&tfo=false&scv=false&fdn=false&sort=false&new_name=true`;
-  
-    try {
-        const subconverterResponse = await fetch(subconverterUrl);
+		if (userAgent.includes('telegram') || userAgent.includes('twitter') || userAgent.includes('miaoko')) {
+			return new Response('Hello World!');
+		} else if (userAgent.includes('clash')) {
+			const subconverterUrl = `https://${subconverter}/sub?target=clash&url=${encodeURIComponent(request.url)}&insert=false&config=${encodeURIComponent
 
-        if (!subconverterResponse.ok) {
-            throw new Error(Error fetching subconverterUrl: ${subconverterResponse.status} ${subconverterResponse.statusText});
-        }
+(subconfig)}&emoji=true&list=false&tfo=false&scv=false&fdn=false&sort=false&new_name=true`;
 
-        const subconverterContent = await subconverterResponse.text();
+			try {
+				const subconverterResponse = await fetch(subconverterUrl);
+				
+				if (!subconverterResponse.ok) {
+					throw new Error(`Error fetching subconverterUrl: ${subconverterResponse.status} ${subconverterResponse.statusText}`);
+				}
+				
+				const subconverterContent = await subconverterResponse.text();
+				
+				return new Response(subconverterContent, {
+					headers: { 'content-type': 'text/plain; charset=utf-8' },
+				});
+			} catch (error) {
+				return new Response(`Error: ${error.message}`, {
+					status: 500,
+					headers: { 'content-type': 'text/plain; charset=utf-8' },
+				});
+			}
+		} else if (userAgent.includes('sing-box') || userAgent.includes('singbox')){
+			const subconverterUrl = `https://${subconverter}/sub?target=singbox&url=${encodeURIComponent(request.url)}&insert=false&config=${encodeURIComponent
 
-        return new Response(subconverterContent, {
-            headers: { 'content-type': 'text/plain; charset=utf-8' },
-        });
-    } catch (error) {
-        return new Response(Error: ${error.message}, {
-            status: 500,
-            headers: { 'content-type': 'text/plain; charset=utf-8' },
-        });
-    }
-} else if (userAgent.includes('sing-box')  userAgent.includes('singbox')){
-    const subconverterUrl = `https://${subconverter}/sub?target=singbox&url=${encodeURIComponent(request.url)}&insert=false&config=${encodeURIComponent
-    (subconfig)}&emoji=true&list=false&tfo=false&scv=false&fdn=false&sort=false&new_name=true`;
+(subconfig)}&emoji=true&list=false&tfo=false&scv=false&fdn=false&sort=false&new_name=true`;
+
+			try {
+			const subconverterResponse = await fetch(subconverterUrl);
+			
+				if (!subconverterResponse.ok) {
+					throw new Error(`Error fetching subconverterUrl: ${subconverterResponse.status} ${subconverterResponse.statusText}`);
+				}
+				
+				const subconverterContent = await subconverterResponse.text();
+				
+				return new Response(subconverterContent, {
+					headers: { 'content-type': 'text/plain; charset=utf-8' },
+				});
+			} catch (error) {
+				return new Response(`Error: ${error.message}`, {
+					status: 500,
+					headers: { 'content-type': 'text/plain; charset=utf-8' },
+				});
+			}
+		} else {
+			if(url.searchParams.get('host') && (url.searchParams.get('host').includes('workers.dev') || url.searchParams.get('host').includes('pages.dev'))) {
+				if (proxyhostsURL) {
+					try {
+						const response = await fetch(proxyhostsURL); 
+					
+						if (!response.ok) {
+							console.error('获取地址时出错:', response.status, response.statusText);
+							return; // 如果有错误，直接返回
+						}
+					
+						const text = await response.text();
+						const lines = text.split('\n');
+						// 过滤掉空行或只包含空白字符的行
+						const nonEmptyLines = lines.filter(line => line.trim() !== '');
+					
+						proxyhosts = proxyhosts.concat(nonEmptyLines);
+					} catch (error) {
+						console.error('获取地址时出错:', error);
+					}
+				}
 				// 使用Set对象去重
 				proxyhosts = [...new Set(proxyhosts)];
 			}
